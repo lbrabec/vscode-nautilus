@@ -14,6 +14,12 @@ except ImportError:
     from urllib.parse import unquote
 
 
+# configuration
+BINARY = 'code'
+NAME = 'VS Code'
+
+# to use this code with more that one binary (e.g. code and codium), the class
+# has to be named uniquely for all the files (e.g. open-vscode.py and open-vscodium.py)
 class OpenVSCodeExtension(Nautilus.MenuProvider, GObject.GObject):
     def __init__(self):
         self.client = GConf.Client.get_default()
@@ -25,7 +31,7 @@ class OpenVSCodeExtension(Nautilus.MenuProvider, GObject.GObject):
         # shell quote locations
         locations = [shlex.quote(location) for location in locations]
 
-        os.system('code %s' % ' '.join(locations))
+        os.system('%s %s' % (BINARY, ' '.join(locations)))
 
     def menu_activate_cb(self, menu, locations):
         self._open_vscode(locations)
@@ -47,9 +53,9 @@ class OpenVSCodeExtension(Nautilus.MenuProvider, GObject.GObject):
             return
 
         item = Nautilus.MenuItem(
-            name='NautilusPython::openvscode_file_item',
-            label='Open VS Code',
-            tip='Open selected files with VS Code'
+            name='NautilusPython::openvs%s_file_item' % BINARY,
+            label='Open %s' % NAME,
+            tip='Open selected files with %s' % NAME
         )
 
         item.connect('activate', self.menu_activate_cb, files)
@@ -60,9 +66,9 @@ class OpenVSCodeExtension(Nautilus.MenuProvider, GObject.GObject):
         right click on background (black space in nautilus)
         """
         item = Nautilus.MenuItem(
-            name='NautilusPython::openvscode_bg_item',
-            label='Open VS Code',
-            tip='Open this directory with VS Code'
+            name='NautilusPython::openvs%s_bg_item' % BINARY,
+            label='Open %s' % NAME,
+            tip='Open this directory with %s' % NAME
         )
 
         item.connect('activate', self.menu_background_activate_cb, file)
